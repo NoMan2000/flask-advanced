@@ -1,9 +1,9 @@
 {% extends "blog/base.html" %}
-{% block title %}Post Creation{% endblock %}
+{% block title %}Category Creation{% endblock %}
 {% block body %}
     <div class="row">
-        <h1 class="text-center">Edit {{ post.title }}</h1>
-        <form method="POST" action="{{ url_for('.edit_post', id=post.id) }}">
+        <h1 class="text-center">Edit {{ category.title }}</h1>
+        <form method="POST" action="{{ url_for('.edit_category', id=category.id) }}">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.title.label }}
