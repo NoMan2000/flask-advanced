@@ -73,7 +73,7 @@ def digest(self):
         smtp_server.close()
 
         return
-    except Exception, e:
+    except Exception as e:
         self.retry(exc=e)
 
 

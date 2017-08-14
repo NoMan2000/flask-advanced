@@ -16,7 +16,7 @@ from flask_cache import Cache
 from flask_assets import Environment, Bundle
 from flask_admin import Admin
 from flask_mail import Mail
-from .models import db, User
+
 
 bcrypt = Bcrypt()
 oid = OpenID()
@@ -43,11 +43,13 @@ login_manager.login_message_category = "info"
 
 @login_manager.user_loader
 def load_user(userid):
+    from webapp.models import User
     return User.query.get(userid)
 
 
 @oid.after_login
 def create_or_login(resp):
+    from webapp.models import db, User
     username = resp.fullname or resp.nickname or resp.email
 
     if not username:

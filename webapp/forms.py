@@ -26,7 +26,7 @@ class CommentForm(Form):
         'Name',
         validators=[DataRequired(), Length(max=255)]
     )
-    text = TextAreaField(u'Comment', validators=[DataRequired()])
+    text = TextAreaField('Comment', validators=[DataRequired()])
 
 
 class PostForm(Form):

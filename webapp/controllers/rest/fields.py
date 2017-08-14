@@ -1,4 +1,4 @@
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 from flask_restful import fields
 
 

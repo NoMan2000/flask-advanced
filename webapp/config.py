@@ -19,6 +19,7 @@ class ProdConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
 
     CACHE_TYPE = 'simple'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
     CELERY_BACKEND_URL = "amqp://guest:guest@localhost:5672//"
@@ -36,8 +37,10 @@ class DevConfig(Config):
     ASSETS_DEBUG = True
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     CACHE_TYPE = 'null'
+    CACHE_NO_NULL_WARNING = True
 
     CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
     CELERY_BACKEND_URL = "amqp://guest:guest@localhost:5672//"
@@ -55,8 +58,9 @@ class TestConfig(Config):
     DEBUG_TB_ENABLED = False
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + db_file.name
-
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     CACHE_TYPE = 'null'
+    CACHE_NO_NULL_WARNING = True
     WTF_CSRF_ENABLED = False
 
     CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
