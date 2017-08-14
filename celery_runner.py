@@ -24,6 +24,6 @@ def make_celery(app):
     return celery
 
 env = os.environ.get('WEBAPP_ENV', 'dev')
-flask_app = create_app('webapp.config.%sConfig' % env.capitalize())
+flask_app = create_app(f'webapp.config.{env.capitalize()}Config')
 
 celery = make_celery(flask_app)

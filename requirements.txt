@@ -44,6 +44,8 @@ Flask-Social==1.6.2
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 freeze==1.0.10
+gevent==1.2.2
+greenlet==0.4.12
 gunicorn==19.7.1
 HTMLParser==0.0.2
 httplib2==0.10.3

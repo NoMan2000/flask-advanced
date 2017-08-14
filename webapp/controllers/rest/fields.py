@@ -4,6 +4,7 @@ from flask_restful import fields
 
 class HTMLStripper(HTMLParser):
     def __init__(self):
+        super().__init__()
         self.reset()
         self.fed = []
 

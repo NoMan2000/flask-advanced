@@ -5,7 +5,7 @@ from flask import render_template
 from flask_mail import Message
 
 from webapp.extensions import celery, mail
-from webapp.models import Reminder, Post
+from webapp.models import Category
 
 
 @celery.task()
@@ -52,15 +52,15 @@ def digest(self):
     delta = datetime.timedelta(days=(week - 1) * 7)
     start, end = date + delta, date + delta + datetime.timedelta(days=6)
 
-    posts = Post.query.filter(
-        Post.publish_date >= start,
-        Post.publish_date <= end
+    categories = Category.query.filter(
+        Category.publish_date >= start,
+        Category.publish_date <= end
     ).all()
 
-    if (len(posts) == 0):
+    if (len(categories) == 0):
         return
 
-    msg = MIMEText(render_template("digest.html", posts=posts), 'html')
+    msg = MIMEText(render_template("digest.html", categories=categories), 'html')
 
     msg['Subject'] = "Weekly Digest"
     msg['From'] = ""

@@ -6,11 +6,11 @@ from flask_script import Manager, Server
 from flask_script.commands import ShowUrls, Clean
 from flask_migrate import Migrate, MigrateCommand
 from webapp import create_app
-from webapp.models import db, User, Role, Post, Tag, Comment
+from webapp.models import db, User, Role, Item, Category
 
 # default to dev config
 env = os.environ.get('WEBAPP_ENV', 'dev')
-app = create_app('webapp.config.%sConfig' % env.capitalize())
+app = create_app(f'webapp.config.{env.capitalize()}Config')
 
 migrate = Migrate(app, db)
 
@@ -27,9 +27,8 @@ def make_shell_context():
         app=app,
         db=db,
         User=User,
-        Post=Post,
-        Tag=Tag,
-        Comment=Comment
+        Category=Category,
+        Item=Item
     )
 
 
@@ -37,38 +36,24 @@ def make_shell_context():
 def setup_db():
     db.create_all()
 
-    admin_role = Role()
+    admin_role = Role('admin')
     admin_role.name = "admin"
     admin_role.description = "admin"
     db.session.add(admin_role)
 
-    default_role = Role()
+    default_role = Role('default')
     default_role.name = "default"
     default_role.description = "default"
     db.session.add(default_role)
 
-    admin = User()
+    admin = User('admin')
     admin.username = "admin"
     admin.set_password("password")
     admin.roles.append(admin_role)
     admin.roles.append(default_role)
     db.session.add(admin)
 
-    tag_one = Tag('Python')
-    tag_two = Tag('Flask')
-    tag_three = Tag('SQLAlechemy')
-    tag_four = Tag('Jinja')
-    tag_list = [tag_one, tag_two, tag_three, tag_four]
-
     s = "Body text"
-
-    for i in range(100):
-        new_post = Post("Post " + str(i))
-        new_post.user = admin
-        new_post.publish_date = datetime.datetime.now()
-        new_post.text = s
-        new_post.tags = random.sample(tag_list, random.randint(1, 3))
-        db.session.add(new_post)
 
     db.session.commit()
 

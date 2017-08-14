@@ -3,12 +3,12 @@ import datetime
 from flask import abort
 from flask_restful import Resource, fields, marshal_with
 
-from webapp.models import db, User, Post, Tag
+from webapp.models import db, User, Category, Item
 from .parsers import (
-    post_get_parser,
-    post_post_parser,
-    post_put_parser,
-    post_delete_parser
+    category_get_parser,
+    category_post_parser,
+    category_put_parser,
+    category_delete_parser
 )
 from .fields import HTMLField
 
@@ -18,7 +18,7 @@ nested_tag_fields = {
     'title': fields.String()
 }
 
-post_fields = {
+category_fields = {
     'id': fields.Integer(),
     'author': fields.String(attribute=lambda x: x.user.username),
     'title': fields.String(),
@@ -28,17 +28,17 @@ post_fields = {
 }
 
 
-class PostApi(Resource):
-    @marshal_with(post_fields)
-    def get(self, post_id=None):
-        if post_id:
-            post = Post.query.get(post_id)
-            if not post:
+class CategoryApi(Resource):
+    @marshal_with(category_fields)
+    def get(self, category_id=None):
+        if category_id:
+            category = Category.query.get(category_id)
+            if not category:
                 abort(404)
 
-            return post
+            return category
         else:
-            args = post_get_parser.parse_args()
+            args = category_get_parser.parse_args()
             page = args['page'] or 1
 
             if args['user']:
@@ -46,55 +46,55 @@ class PostApi(Resource):
                 if not user:
                     abort(404)
 
-                posts = user.posts.order_by(
-                    Post.publish_date.desc()
+                categories = user.categories.order_by(
+                    Category.publish_date.desc()
                 ).paginate(page, 30)
             else:
-                posts = Post.query.order_by(
-                    Post.publish_date.desc()
+                categories = Category.query.order_by(
+                    Category.publish_date.desc()
                 ).paginate(page, 30)
 
-            return posts.items
+            return categories.items
 
-    def post(self, post_id=None):
-        if post_id:
+    def post(self, category_id=None):
+        if category_id:
             abort(400)
         else:
-            args = post_post_parser.parse_args(strict=True)
+            args = category_post_parser.parse_args(strict=True)
 
             user = User.verify_auth_token(args['token'])
             if not user:
                 abort(401)
 
-            new_post = Post(args['title'])
+            new_post = Category(args['title'])
             new_post.user = user
             new_post.date = datetime.datetime.now()
             new_post.text = args['text']
 
-            if args['tags']:
-                for item in args['tags']:
-                    tag = Tag.query.filter_by(title=item).first()
+            if args['items']:
+                for item in args['items']:
+                    tag = Item.query.filter_by(title=item).first()
 
                     # Add the tag if it exists. If not, make a new tag
                     if tag:
                         new_post.tags.append(tag)
                     else:
-                        new_tag = Tag(item)
+                        new_tag = Item(item)
                         new_post.tags.append(new_tag)
 
             db.session.add(new_post)
             db.session.commit()
             return new_post.id, 201
 
-    def put(self, post_id=None):
-        if not post_id:
+    def put(self, category_id=None):
+        if not category_id:
             abort(400)
 
-        post = Post.query.get(post_id)
+        post = Category.query.get(category_id)
         if not post:
             abort(404)
 
-        args = post_put_parser.parse_args(strict=True)
+        args = category_put_parser.parse_args(strict=True)
         user = User.verify_auth_token(args['token'])
         if not user:
             abort(401)
@@ -107,30 +107,30 @@ class PostApi(Resource):
         if args['text']:
             post.text = args['text']
 
-        if args['tags']:
-            for item in args['tags']:
-                tag = Tag.query.filter_by(title=item).first()
+        if args['items']:
+            for item in args['items']:
+                tag = Item.query.filter_by(title=item).first()
 
                 # Add the tag if it exists. If not, make a new tag
                 if tag:
                     post.tags.append(tag)
                 else:
-                    new_tag = Tag(item)
+                    new_tag = Item(item)
                     post.tags.append(new_tag)
 
         db.session.add(post)
         db.session.commit()
         return post.id, 201
 
-    def delete(self, post_id=None):
-        if not post_id:
+    def delete(self, category_id=None):
+        if not category_id:
             abort(400)
 
-        post = Post.query.get(post_id)
+        post = Category.query.get(category_id)
         if not post:
             abort(404)
 
-        args = post_delete_parser.parse_args(strict=True)
+        args = category_delete_parser.parse_args(strict=True)
         user = User.verify_auth_token(args['token'])
         if user != post.user:
             abort(401)

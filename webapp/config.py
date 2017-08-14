@@ -16,7 +16,7 @@ class Config(object):
 
 
 class ProdConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../items.sqlite'
 
     CACHE_TYPE = 'simple'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -36,7 +36,7 @@ class DevConfig(Config):
 
     ASSETS_DEBUG = True
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../items.sqlite'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     CACHE_TYPE = 'null'

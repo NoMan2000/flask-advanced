@@ -6,7 +6,7 @@ from flask import Flask
 from flask_login import current_user
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 
-from .models import db, Reminder, User, Role, Post, Comment, Tag
+from .models import db, User, Role, Item, Category
 from .extensions import (
     bcrypt,
     oid,
@@ -25,7 +25,7 @@ from .extensions import (
 from .controllers.main import main_blueprint
 from .controllers.blog import blog_blueprint
 from .controllers.rest.auth import AuthApi
-from .controllers.rest.post import PostApi
+from .controllers.rest.category import CategoryApi
 from .controllers.admin import (
     CustomView,
     CustomModelView,
@@ -49,7 +49,6 @@ def create_app(object_name):
     app.config.from_object(object_name)
 
     db.init_app(app)
-    event.listen(Reminder, 'after_insert', on_reminder_save)
 
     bcrypt.init_app(app)
     oid.init_app(app)
@@ -77,25 +76,16 @@ def create_app(object_name):
         )
     )
     admin.add_view(
-        PostView(
-            Post, db.session, category='Models'
+        CustomModelView(
+            Category, db.session, category='Models'
         )
     )
     admin.add_view(
         CustomModelView(
-            Comment, db.session, category='Models'
+            Item, db.session, category='Models'
         )
     )
-    admin.add_view(
-        CustomModelView(
-            Tag, db.session, category='Models'
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            Reminder, db.session, category='Models'
-        )
-    )
+
     admin.add_view(
         CustomFileAdmin(
             os.path.join(os.path.dirname(__file__), 'static'),
@@ -109,9 +99,9 @@ def create_app(object_name):
         '/api/auth'
     )
     rest_api.add_resource(
-        PostApi,
-        '/api/post',
-        '/api/post/<int:post_id>'
+        CategoryApi,
+        '/api/category',
+        '/api/category/<int:post_id>'
     )
     rest_api.init_app(app)
 

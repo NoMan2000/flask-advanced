@@ -21,7 +21,7 @@ class CKTextAreaField(TextAreaField):
     widget = CKTextAreaWidget()
 
 
-class CommentForm(Form):
+class ItemForm(Form):
     name = StringField(
         'Name',
         validators=[DataRequired(), Length(max=255)]
@@ -29,7 +29,7 @@ class CommentForm(Form):
     text = TextAreaField('Comment', validators=[DataRequired()])
 
 
-class PostForm(Form):
+class CategoryForm(Form):
     title = StringField('Title', [DataRequired(), Length(max=255)])
     text = TextAreaField('Content', [DataRequired()])
 
