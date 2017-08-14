@@ -1,16 +1,17 @@
 {% extends "blog/base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}{{ item.title }}{% endblock %}
 {% block body %}
     <div class="row">
+        <h1 class="text-center">Categories With Item {{ item.title }}</h1>
         <div class="col-lg-9">
-            {% for item in categories.items %}
+            {% for category in categories %}
                 <div class="row">
-                    <div class="col-lg-12"><h1>{{ item.title }}</h1></div>
+                    <div class="col-lg-12"><h1>{{ category.title }}</h1></div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        {{ item.text | truncate(500) | safe }}
-                        <a href="{{ url_for('.item', item_id=item.id) }}">Read More</a>
+                        {{ category.text | truncate(500) | safe }}
+                        <a href="{{ url_for('.category', category_id=category.id) }}">Read More</a>
                     </div>
                 </div>
             {% endfor %}
@@ -28,12 +29,10 @@
                 <h5>Popular Items</h5>
                 <ul>
                     {% for item in top_items %}
-                        <li><a href="{{ url_for('.item', item_name=item[0].name) }}">{{ item[0].name }}</a></li>
+                        <li><a href="{{ url_for('.item', item_name=item.name) }}">{{ item.name }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
-
-    {{ render_pagination(categories, '.home') }}
 {% endblock %}

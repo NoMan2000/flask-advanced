@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import func
+from sqlalchemy import func, text
 from flask import (render_template,
                    Blueprint,
                    redirect,
@@ -22,11 +22,16 @@ blog_blueprint = Blueprint(
 
 @cache.cached(timeout=7200, key_prefix='sidebar_data')
 def sidebar_data():
-    recent = Category.query.order_by(Category.publish_date.desc()).limit(5).all()
-    items = recent.items
-    top_items = db.session.query(
-        Item, func.count(items).label('total')
-    ).join(items).group_by(Item).order_by('total DESC').limit(5).all()
+    recent = Category.query.order_by(
+        Category.publish_date.desc()
+    ).limit(5).all()
+
+    top_items = db.session.query(Item).from_statement(
+        text('''
+        SELECT * FROM item
+        JOIN category 
+        ON item.category_id = category.id
+    ''')).all()
 
     return recent, top_items
 
@@ -35,7 +40,10 @@ def sidebar_data():
 @blog_blueprint.route('/<int:page>')
 @cache.cached(timeout=60)
 def home(page=1):
-    categories = Category.query.order_by(Category.publish_date.desc()).paginate(page, 10)
+    categories = Category.query.order_by(
+        Category.publish_date.desc()
+    ).paginate(page, 10)
+
     recent, top_items = sidebar_data()
 
     return render_template(
@@ -52,22 +60,21 @@ def post(category_id):
     form = ItemForm()
 
     if form.validate_on_submit():
-        new_comment = Comment()
-        new_comment.name = form.name.data
-        new_comment.text = form.text.data
-        new_comment.post_id = category_id
-        new_comment.date = datetime.datetime.now()
+        new_category = Category(form.name.title)
+        new_category.name = form.name.data
+        new_category.text = form.text.data
+        new_category.post_id = category_id
+        new_category.date = datetime.datetime.now()
 
-        db.session.add(new_comment)
+        db.session.add(new_category)
         db.session.commit()
 
     category = Category.query.get_or_404(category_id)
-    items = category_id.items
-    comments = category.comments.order_by(Item.date.desc()).all()
+    items = category.items
     recent, top_items = sidebar_data()
 
     return render_template(
-        'post.html',
+        'category.html',
         category=category,
         recent=recent,
         top_items=top_items,
@@ -82,14 +89,14 @@ def new_post():
     form = CategoryForm()
 
     if form.validate_on_submit():
-        new_post = Category(form.title.data)
-        new_post.text = form.text.data
-        new_post.publish_date = datetime.datetime.now()
-        new_post.user = User.query.filter_by(
+        new_post_model = Category(form.title.data)
+        new_post_model.text = form.text.data
+        new_post_model.publish_date = datetime.datetime.now()
+        new_post_model.user = User.query.filter_by(
             username=current_user.username
         ).one()
 
-        db.session.add(new_post)
+        db.session.add(new_post_model)
         db.session.commit()
 
     return render_template('new.html', form=form)
@@ -124,33 +131,21 @@ def edit_post(id):
     abort(403)
 
 
-@blog_blueprint.route('/tag/<string:tag_name>')
+@blog_blueprint.route('/item/<string:item_name>')
 @cache.cached(timeout=60)
-def tag(tag_name):
-    item = Item.query.filter_by(title=tag_name).first_or_404()
-    posts = tag.posts.order_by(Category.publish_date.desc()).all()
+def item(item_name):
+    item = Item.query.filter_by(name=item_name).first_or_404()
+    category = db.session.execute(f'''
+        SELECT * FROM category 
+        WHERE category = {item.category_id}
+    ''')
+
     recent, top_items = sidebar_data()
 
     return render_template(
-        'tag.html',
-        tag=tag,
-        posts=posts,
-        recent=recent,
-        top_items=top_items
-    )
-
-
-@blog_blueprint.route('/user/<string:username>')
-@cache.cached(timeout=60)
-def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    posts = user.posts.order_by(Category.publish_date.desc()).all()
-    recent, top_items = sidebar_data()
-
-    return render_template(
-        'user.html',
-        user=user,
-        posts=posts,
+        'item.html',
+        item=item,
+        category=category,
         recent=recent,
         top_items=top_items
     )

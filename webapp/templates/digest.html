@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -16,14 +16,14 @@
                     Weekly Digest
                 </td>
             </tr>
-            {% for post in posts %}
+            {% for category in categories %}
                 <tr>
                     <td style="font-size: 24px;
                                font-family: Helvetica, sans-serif;
                                color: #444;
                                text-align: center;
                                line-height: 1.65">
-                        {{ post.title }}
+                        {{ category.title }}
                     </td>
                 </tr>
                 <tr>
@@ -31,7 +31,7 @@
                                font-family: serif;
                                color: #444;
                                line-height:1.65">
-                        {{ post.text | truncate(500) | safe }} 
+                        {{ category.text | truncate(500) | safe }}
                     </td>
                 </tr>
                 <tr>
@@ -39,7 +39,7 @@
                                font-family: serif;
                                color: blue;
                                margin-bottom: 20px">
-                        <a href="{{ url_for('.post', post_id=post.id) }}">Read More</a>
+                        <a href="{{ url_for('.category', category_id=category.id) }}">Read More</a>
                     </td>
                 </tr>
             {% endfor %}
