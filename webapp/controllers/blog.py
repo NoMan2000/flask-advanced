@@ -4,6 +4,7 @@ from flask import (render_template,
                    Blueprint,
                    redirect,
                    url_for,
+                   request,
                    abort)
 from flask_login import login_required, current_user
 from flask_principal import Permission, UserNeed
@@ -40,9 +41,15 @@ def sidebar_data():
 @blog_blueprint.route('/<int:page>')
 @cache.cached(timeout=60)
 def home(page=1):
+
     categories = Category.query.order_by(
         Category.publish_date.desc()
-    ).paginate(page, 10)
+    ).paginate(page, 10, error_out=False)
+
+    if categories.page != page:
+        categories = Category.query.order_by(
+            Category.publish_date.desc()
+        ).paginate(1, 10, error_out=False)
 
     recent, top_items = sidebar_data()
 
@@ -54,9 +61,9 @@ def home(page=1):
     )
 
 
-@blog_blueprint.route('/categories/<int:category_id>', methods=('GET', 'POST'))
+@blog_blueprint.route('/category/<int:category_id>', methods=('GET', 'POST'))
 @cache.cached(timeout=60)
-def post(category_id):
+def category(category_id):
     form = ItemForm()
 
     if form.validate_on_submit():
@@ -70,7 +77,7 @@ def post(category_id):
         db.session.commit()
 
     category = Category.query.get_or_404(category_id)
-    items = category.items
+    items = Item.query.filter_by(category_id=category.id).all()
     recent, top_items = sidebar_data()
 
     return render_template(
@@ -135,17 +142,39 @@ def edit_post(id):
 @cache.cached(timeout=60)
 def item(item_name):
     item = Item.query.filter_by(name=item_name).first_or_404()
-    category = db.session.execute(f'''
+    categories = db.session.query(Category).from_statement(
+        text(f'''
         SELECT * FROM category 
-        WHERE category = {item.category_id}
-    ''')
+        WHERE id = {item.category_id}
+    ''')).all()
 
     recent, top_items = sidebar_data()
 
     return render_template(
         'item.html',
         item=item,
-        category=category,
+        categories=categories,
+        recent=recent,
+        top_items=top_items
+    )
+
+@blog_blueprint.route('/item/')
+@cache.cached(timeout=60)
+def item_identifier():
+    id = request.args.get('item_id')
+    item = Item.query.get_or_404(id)
+    categories = db.session.query(Category).from_statement(
+        text(f'''
+        SELECT * FROM category 
+        WHERE id = {item.category_id}
+    ''')).all()
+
+    recent, top_items = sidebar_data()
+
+    return render_template(
+        'item.html',
+        item=item,
+        categories=categories,
         recent=recent,
         top_items=top_items
     )

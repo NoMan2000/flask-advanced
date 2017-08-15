@@ -10,13 +10,13 @@
                 <div class="row">
                     <div class="col-lg-12">
                         {{ item.text | truncate(500) | safe }}
-                        <a href="{{ url_for('.item', item_id=item.id, item_name=item.name) }}">Read More</a>
+                        <a href="{{ url_for('.item_identifier', item_id=item.id, item_name=item.name) }}">Read More</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div class="col-lg-3">
-            
+
             <div class="row">
                 <h5>Popular Items</h5>
                 <ul>
@@ -27,6 +27,7 @@
             </div>
         </div>
     </div>
-
-    {{ render_pagination(categories, '.home') }}
+    {% if categories.has_next %}
+        {{ render_pagination(categories, '.home') }}
+    {% endif %}
 {% endblock %}

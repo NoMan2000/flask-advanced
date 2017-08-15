@@ -8,16 +8,17 @@
                     <h1>{{ category.title }}</h1>
                 </div>
             </div>
-            <div class="row">
-
-                <div class="col-lg-6">
-                    <p class="text-right">
-                        Tags: {% for item in items %}
-                            <a href="{{ url_for('.item', item_name=item.title) }}">{{item.title}}</a>
-                        {% endfor %}
-                    </p>
+            {% if items %}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="text-right">
+                            Tags: {% for item in items %}
+                                <a href="{{ url_for('.item', item_name=item.title) }}">{{item.title}}</a>
+                            {% endfor %}
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
             <div class="row">
                 <div class="col-lg-12">
