@@ -83,7 +83,7 @@ def facebook_authorized(resp):
         )
 
     session['facebook_oauth_token'] = (resp['access_token'], '')
-    me = facebook.get('/me')
+    me = facebook.get('/me/?fields=email,first_name, last_name, name, id, picture.height(200).width(200)')
     user = User.query.filter_by(
         username=me.data['name']
     ).first()

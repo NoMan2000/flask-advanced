@@ -1,7 +1,7 @@
 import os
 import datetime
 import random
-
+from flask_assets import ManageAssets
 from flask_script import Manager, Server
 from flask_script.commands import ShowUrls, Clean
 from flask_migrate import Migrate, MigrateCommand
@@ -19,6 +19,8 @@ manager.add_command("server", Server())
 manager.add_command("show-urls", ShowUrls())
 manager.add_command("clean", Clean())
 manager.add_command('db', MigrateCommand)
+manager.add_command("assets", ManageAssets(env))
+
 
 
 @manager.shell
