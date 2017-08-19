@@ -72,8 +72,8 @@ facebook = oauth.remote_app(
     request_token_url=None,
     access_token_url='/oauth/access_token',
     authorize_url='https://www.facebook.com/dialog/oauth',
-    consumer_key='',
-    consumer_secret='',
+    consumer_key='1762991030667967',
+    consumer_secret='fddf7b3d5301d3df6510504f831f5e6e',
     request_token_params={'scope': 'email'}
 )
 

@@ -63,6 +63,7 @@ def login():
 
 @main_blueprint.route('/facebook')
 def facebook_login():
+
     return facebook.authorize(
         callback=url_for(
             '.facebook_authorized',
@@ -82,14 +83,13 @@ def facebook_authorized(resp):
         )
 
     session['facebook_oauth_token'] = (resp['access_token'], '')
-
     me = facebook.get('/me')
     user = User.query.filter_by(
-        username=me.data['first_name'] + " " + me.data['last_name']
+        username=me.data['name']
     ).first()
 
     if not user:
-        user = User(me.data['first_name'] + " " + me.data['last_name'])
+        user = User(me.data['name'])
         db.session.add(user)
         db.session.commit()
 
