@@ -13,7 +13,6 @@ Flask-HTTPAuth
 Flask-Login
 Flask-Mail
 Flask-Migrate
-Flask-Migrate
 Flask-OAuth
 Flask-OpenID
 Flask-Principal
