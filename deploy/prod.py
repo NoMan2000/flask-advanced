@@ -1,4 +1,5 @@
 from gevent.wsgi import WSGIServer
+
 from webapp import create_app
 
 app = create_app('webapp.config.ProdConfig')

@@ -1,6 +1,7 @@
-from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
+from tornado.wsgi import WSGIContainer
+
 from webapp import create_app
 
 app = WSGIContainer(create_app("webapp.config.ProdConfig"))

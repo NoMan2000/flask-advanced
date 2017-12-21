@@ -1,11 +1,13 @@
-import smtplib
 import datetime
+import smtplib
 from email.mime.text import MIMEText
+
 from flask import render_template
 from flask_mail import Message
 
 from webapp.extensions import celery, mail
 from webapp.models import Category
+from .models import Reminder
 
 
 @celery.task()

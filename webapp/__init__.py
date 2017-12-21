@@ -1,12 +1,19 @@
 import os
 
-from sqlalchemy import event
-
 from flask import Flask
 from flask_login import current_user
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 
-from .models import db, User, Role, Item, Category
+from .controllers.admin import (
+    CustomView,
+    CustomModelView,
+    CustomFileAdmin,
+    PostView
+)
+from .controllers.blog import blog_blueprint
+from .controllers.main import main_blueprint
+from .controllers.rest.auth import AuthApi
+from .controllers.rest.category import CategoryApi
 from .extensions import (
     bcrypt,
     oid,
@@ -22,16 +29,7 @@ from .extensions import (
     admin,
     mail
 )
-from .controllers.main import main_blueprint
-from .controllers.blog import blog_blueprint
-from .controllers.rest.auth import AuthApi
-from .controllers.rest.category import CategoryApi
-from .controllers.admin import (
-    CustomView,
-    CustomModelView,
-    CustomFileAdmin,
-    PostView
-)
+from .models import db, User, Role, Item, Category
 from .tasks import on_reminder_save
 
 
@@ -44,7 +42,6 @@ def create_app(object_name):
         object_name: the python path of the config object,
                      e.g. project.config.ProdConfig
     """
-
     app = Flask(__name__)
     app.config.from_object(object_name)
 

@@ -14,8 +14,8 @@ from flask_principal import (
 )
 
 from webapp.extensions import oid, facebook, twitter
-from webapp.models import db, User
 from webapp.forms import LoginForm, RegisterForm, OpenIDForm
+from webapp.models import db, User
 
 main_blueprint = Blueprint(
     'main',
@@ -124,7 +124,7 @@ def twitter_authorized(resp):
 
     user = User.query.filter_by(username=resp['screen_name']).first()
     if not user:
-        user = User(resp['screen_name'], '')
+        user = User(resp['screen_name'])
         db.session.add(user)
         db.session.commit()
 
