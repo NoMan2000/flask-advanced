@@ -1,5 +1,6 @@
 from fabric.api import env, local, run, sudo, cd, settings
 
+env.dotenv_path = '.env'
 env.hosts = ['user@host']
 
 

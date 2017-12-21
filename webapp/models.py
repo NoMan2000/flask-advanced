@@ -1,7 +1,6 @@
 from flask import current_app
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import AnonymousUserMixin
-
+from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import (
     TimedJSONWebSignatureSerializer as Serializer,
     BadSignature,
@@ -118,3 +117,8 @@ class Item(db.Model):
     def __repr__(self):
         return "<Comment '{}'>".format(self.text[:15])
 
+
+class Reminder(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    text = db.Column(db.Text())
+    has_been_sent = db.Column(db.Boolean())

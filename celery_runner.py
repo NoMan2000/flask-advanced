@@ -1,6 +1,11 @@
 import os
-from webapp import create_app
+
 from celery import Celery
+
+from utils.loadenvironment import load_environment
+from webapp import create_app
+
+load_environment()
 
 
 def make_celery(app):
@@ -22,6 +27,7 @@ def make_celery(app):
     celery.Task = ContextTask
 
     return celery
+
 
 env = os.environ.get('WEBAPP_ENV', 'dev')
 flask_app = create_app(f'webapp.config.{env.capitalize()}Config')
